@@ -39,7 +39,7 @@ public class HotSpotButtonsList : MonoBehaviour
 
             RoomStatistics roomStatistics = new RoomStatistics(UIManager.Instance.CurrenthotSpotsHolder.HotSpots[index].hotSpotName);
 
-            hotSpotsButtons[index].GetComponent<PopupOpener>().popup.GetComponent<StatisticsUIController>().ShowStatistics(roomStatistics);
+            hotSpotsButtons[index].GetComponent<PopupOpener>().popup.GetComponent<RoomStatisticsUIController>().ShowStatistics(roomStatistics);
         });
     }
 

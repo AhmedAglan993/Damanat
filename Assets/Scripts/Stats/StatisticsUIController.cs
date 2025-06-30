@@ -6,18 +6,32 @@ using DG.Tweening;
 public class StatisticsUIController : MonoBehaviour
 {
     [Header("Text Fields")]
-    public TMP_Text roomNameText;
-    public TMP_Text occupancyText;
-    public TMP_Text energyText;
-    public TMP_Text tempText;
-    public TMP_Text airText;
-    public TMP_Text visitorsText;
-    public TMP_Text lastMaintText;
+    [SerializeField] TMP_Text roomNameText;
+    [SerializeField] TMP_Text occupancyText;
+    [SerializeField] TMP_Text energyText;
+    [SerializeField] TMP_Text tempText;
+    [SerializeField] TMP_Text airText;
+    [SerializeField] TMP_Text visitorsText;
+    [SerializeField] TMP_Text lastMaintText;
 
     [Header("Progress")]
     public Image occupancyRing;
     public Image tempImage;
     public Image EnergyImage; // fillAmount 0 to 1
+    [SerializeField] private TMP_Text trafficCardText;
+    [SerializeField] private TMP_Text vehiclesCardText;
+    [SerializeField] private TMP_Text peopleCardText;
+    [SerializeField] private TMP_Text lastUpdateCardText;
+
+    public void ShowGeneralStatisticsCards(GeneralStatistics stats)
+    {
+        if (stats == null) return;
+
+        trafficCardText.text = $"{stats.averageTraffic:F0} /hr";
+        vehiclesCardText.text = $"{stats.totalVehicles}";
+        peopleCardText.text = $"{stats.totalPeopleInArea}";
+        lastUpdateCardText.text = stats.lastUpdate;
+    }
 
 
     public void ShowStatistics(RoomStatistics stats)

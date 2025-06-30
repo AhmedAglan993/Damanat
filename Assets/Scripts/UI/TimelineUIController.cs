@@ -20,7 +20,12 @@ public class TimelineUIController : MonoBehaviour
     public GameObject alertIconPrefab;            // The alert button prefab for overlay layer
 
     public Dictionary<string, GameObject> alertIcons = new(); // key: "HH:mm"
-
+    private readonly Dictionary<string, Color> severityColors = new()
+    {
+        { "Info", new Color(0.3f, 0.7f, 1f) },     // Light Blue
+        { "Warning", new Color(1f, 0.65f, 0f) },   // Orange
+        { "Critical", new Color(1f, 0.2f, 0.2f) }, // Red
+    };
     public List<TimelineFrame> frames = new();
     private ZoomLevel currentZoom = ZoomLevel.Hour;
 
@@ -165,8 +170,13 @@ public class TimelineUIController : MonoBehaviour
     {
         GameObject icon = Instantiate(alertIconPrefab, alertOverlayPanel);
         icon.name = $"Alert_{time}";
-        icon.GetComponent<Button>().onClick.AddListener(() => alertPopupManager.ShowAlert(entry));
-        icon.GetComponent<RectTransform>().sizeDelta = new Vector2(10, 10); // match size
+        if (icon.TryGetComponent(out Image iconImage) && severityColors.TryGetValue(entry.alertSeverity, out Color color))
+        {
+            iconImage.color = color;
+            icon.GetComponent<Button>().onClick.AddListener(() => alertPopupManager.ShowAlert(entry, color));
+            icon.GetComponent<RectTransform>().sizeDelta = new Vector2(10, 10); // match size
+        }
+
 
         alertIcons[time.ToString()] = icon;
     }

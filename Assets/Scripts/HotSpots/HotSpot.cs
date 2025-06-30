@@ -16,7 +16,7 @@ public class HotSpot : MonoBehaviour
             print(GetComponent<HotSpot>().hotSpotName);
             RoomStatistics roomStatistics = new RoomStatistics(GetComponent<HotSpot>().hotSpotName);
 
-           GetComponentInChildren<StatisticsPopupOpener>().popup.GetComponent<StatisticsUIController>().ShowStatistics(roomStatistics);
+           GetComponentInChildren<StatisticsPopupOpener>().popup.GetComponent<RoomStatisticsUIController>().ShowStatistics(roomStatistics);
         });
     }
     [ContextMenu("SetHotspotNames")]

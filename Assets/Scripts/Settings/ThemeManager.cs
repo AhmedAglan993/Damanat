@@ -6,7 +6,7 @@ public class ThemeManager : MonoBehaviour
 
     private void Start()
     {
-        SetDarkMode(false); // start with light mode (or set to true if you want dark)
+        SetDarkMode(true); // start with light mode (or set to true if you want dark)
     }
 
     public void SetDarkMode(bool dark)
