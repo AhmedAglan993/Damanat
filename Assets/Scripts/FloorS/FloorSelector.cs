@@ -10,6 +10,7 @@ public class FloorSelector : MonoBehaviour
     [SerializeField] Transform floorSelectorsListParent;
     [SerializeField] HotSpotButtonsList hotSpotButtonsList;
     List<GameObject> cleanButtons;
+    [SerializeField] TextMeshProUGUI floorSelectorButtonOpenerTxt;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,6 +19,7 @@ public class FloorSelector : MonoBehaviour
     void PopulateFlooersData()
     {
         cleanButtons = new List<GameObject>();
+
         for (int i = 0; i < FloorsManager.Instance.floors.Length; i++)
         {
             cleanButtons.Add(Instantiate(floorSelectorButtonPrefabe, floorSelectorsListParent));
@@ -28,6 +30,7 @@ public class FloorSelector : MonoBehaviour
             cleanButtons[i].GetComponent<CleanButton>().onClick.AddListener(() =>
             {
                 SelectFloorToShow(FloorsManager.Instance.floors[index].floorNumber);
+                floorSelectorButtonOpenerTxt.text = FloorsManager.Instance.floors[index].floorName;
             });
             cleanButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = FloorsManager.Instance.floors[i].floorName;
         }

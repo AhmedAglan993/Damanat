@@ -1,9 +1,8 @@
-﻿using Ricimi;
-using System;
-using System.Collections.Generic;
-using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using System.Collections.Generic;
+using Ricimi;
 
 public class TimelineUIController : MonoBehaviour
 {
@@ -11,241 +10,244 @@ public class TimelineUIController : MonoBehaviour
     public RectTransform contentPanel;
     public GameObject timeFramePrefab;
     public AlertPopupManager alertPopupManager;
-    private readonly Dictionary<string, Color> severityColors = new()
-{
-    { "Info", new Color(0.3f, 0.7f, 1f) },     // Light Blue
-    { "Warning", new Color(1f, 0.65f, 0f) },   // Orange
-    { "Critical", new Color(1f, 0.2f, 0.2f) }, // Red
-};
 
     [Header("Zoom Settings")]
-    public float minFrameWidth = 60f;
-    public float zoomDuration = 0.35f;
-    public float zoomCooldown = 0.2f;
-    public float scrollThreshold = 0.4f;
-    public RectTransform alertOverlayPanel; // Drag your new AlertOverlay here
-    public GameObject alertIconPrefab;      // A small button/icon prefab
-    private List<GameObject> activeAlertIcons = new(); // To track for cleanup
-    private Dictionary<string, GameObject> iconDict = new();
+    public float frameWidth = 60f;
+    public int startHour = 0;
+    public int endHour = 24;
+    [Header("Alert Overlay")]
+    public RectTransform alertOverlayPanel;       // Assign this in the inspector
+    public GameObject alertIconPrefab;            // The alert button prefab for overlay layer
 
-    public TimeSpan startTime = new(10, 0, 0);
-    public TimeSpan currentEndTime;
-    public TimeSpan currentStep = TimeSpan.FromMinutes(1);
+    public Dictionary<string, GameObject> alertIcons = new(); // key: "HH:mm"
+
+    public List<TimelineFrame> frames = new();
+    private ZoomLevel currentZoom = ZoomLevel.Hour;
+
+    private readonly Dictionary<ZoomLevel, int> zoomSteps = new()
+    {
+        { ZoomLevel.Hour, 60 },
+        { ZoomLevel.HalfHour, 30 },
+        { ZoomLevel.QuarterHour, 15 },
+        { ZoomLevel.FiveMinutes, 5 },
+        { ZoomLevel.OneMinute, 1 },
+    };
 
     public List<AlertEntry> alertEntries = new();
 
-    private int visibleFrames = 60;
-    private float lastZoomTime;
-
-    private void Start()
+    void Start()
     {
-        currentEndTime = startTime + TimeSpan.FromMinutes(60);
-        GenerateRandomAlerts(50);
-        ZoomToTimeRange(startTime, currentEndTime);
+        GenerateRandomAlerts(80);
+        GenerateBaseTimeline();
     }
-    public void GenerateRandomAlerts(int count)
+    void GenerateRandomAlerts(int count)
     {
-        string[] titles = {
-        "Unauthorized Access", "Power Spike", "Sensor Offline", "Temperature Spike",
-        "Door Left Open", "CO₂ Threshold Exceeded", "Fire Alarm Triggered",
-        "Humidity Anomaly", "Elevator Error", "Vibration Detected"
-    };
-
-        string[] locations = {
-        "Main Entrance - Zone A", "Server Room 2", "Cold Storage Zone 1", "Exit Corridor - East Wing",
-        "Basement Level B3 - Pipe Room", "Roof Panel 3", "Elevator Shaft", "Lab 4 - South Wing"
-    };
-
-        string[] descriptions = {
-        "Detected anomaly in system logs.",
-        "Sensor lost connection for over 3 minutes.",
-        "Temperature spike registered above 30°C.",
-        "Access control flagged suspicious activity.",
-        "Power voltage fluctuated beyond safe limit.",
-        "Security system was manually overridden.",
-        "Emergency door left open unexpectedly.",
-        "Unscheduled equipment shutdown occurred."
-    };
-
-        string[] actions = {
-        "Check device status manually.",
-        "Dispatch technician to the location.",
-        "Notify supervisor and document the event.",
-        "Review surveillance for possible cause.",
-        "Restart hardware or check cabling."
-    };
-
-        string[] types = { "Security", "Electrical", "Environment", "Access Control", "System" };
+        string[] titles = { "Unauthorized Access", "Power Spike", "Sensor Offline", "Door Open" };
+        string[] locations = { "Main Entrance", "Server Room", "Cold Storage", "Basement" };
         string[] severities = { "Info", "Warning", "Critical" };
 
         System.Random rand = new();
 
         for (int i = 0; i < count; i++)
         {
-            int hour = rand.Next(7, 18); // between 7 AM and 5 PM
-            int minute = rand.Next(0, 60);
-            string alertTime = new TimeSpan(hour, minute, 0).ToString(@"hh\:mm");
+            int randomMinute = rand.Next(startHour * 60, endHour * 60);
+            ClockTime time = ClockTime.FromTotalMinutes(randomMinute);
 
             alertEntries.Add(new AlertEntry
             {
                 alertTitle = titles[rand.Next(titles.Length)],
-                alertTime = alertTime,
+                alertTime = time.ToString(), // "HH:mm"
                 alertLocation = locations[rand.Next(locations.Length)],
-                alertDescription = descriptions[rand.Next(descriptions.Length)],
-                alertAction = actions[rand.Next(actions.Length)],
-                alertType = types[rand.Next(types.Length)],
+                alertDescription = "Random alert generated for testing.",
+                alertAction = "Check system logs.",
+                alertType = "System",
                 alertSeverity = severities[rand.Next(severities.Length)]
             });
         }
     }
-    public bool HasAlertFor(string timeLabel)
-    {
-        return alertEntries.Exists(a => a.alertTime == timeLabel);
-    }
 
-
-    private void Update()
+    void Update()
     {
         if (!TimelineHoverDetector.isHovering) return;
 
         float scroll = Input.mouseScrollDelta.y;
-        if (Mathf.Abs(scroll) < scrollThreshold) return;
-        if (Time.time - lastZoomTime < zoomCooldown) return;
-
-        lastZoomTime = Time.time;
-        if (scroll > 0) ZoomIn();
-        else ZoomOut();
-    }
-
-    void ZoomIn() => AdjustZoom(0.8f);
-    void ZoomOut() => AdjustZoom(1.25f);
-
-    void AdjustZoom(float factor)
-    {
-        TimeSpan currentRange = currentEndTime - startTime;
-        double newRangeSeconds = Math.Max(10, currentRange.TotalSeconds * factor);
-
-        TimeSpan newRange = TimeSpan.FromSeconds(newRangeSeconds);
-        TimeSpan center = startTime + currentRange / 2;
-
-        TimeSpan newStart = center - newRange / 2;
-        TimeSpan newEnd = center + newRange / 2;
-
-        ZoomToTimeRange(newStart, newEnd);
-    }
-
-    public void ZoomToTimeRange(TimeSpan start, TimeSpan end)
-    {
-        startTime = start;
-        currentEndTime = end;
-
-        double totalSeconds = (end - start).TotalSeconds;
-        if (totalSeconds < 10) totalSeconds = 10;
-
-        float contentWidth = contentPanel.rect.width;
-        int maxFrames = Mathf.Max(5, Mathf.FloorToInt(contentWidth / minFrameWidth));
-        visibleFrames = Mathf.Clamp(maxFrames, 5, 200);
-
-        double stepSeconds = totalSeconds / visibleFrames;
-        stepSeconds = Math.Max(1, stepSeconds); // Prevent zero
-        currentStep = TimeSpan.FromSeconds(stepSeconds);
-
-        GenerateTimeline();
-    }
-    public void UpdateAlertVisibility(TimeSpan visibleStart, TimeSpan visibleEnd)
-    {
-        foreach (var kvp in iconDict)
+        if (Mathf.Abs(scroll) > 0.1f)
         {
-            string label = kvp.Key;
-            GameObject icon = kvp.Value;
-
-            if (TimeSpan.TryParse(label, out var time))
+            if (scroll > 0 && currentZoom < ZoomLevel.OneMinute)
             {
-                bool shouldShow = time >= visibleStart && time <= visibleEnd;
-                icon.SetActive(shouldShow);
+                currentZoom++;
+                InsertZoomFrames();
+            }
+            else if (scroll < 0 && currentZoom > ZoomLevel.Hour)
+            {
+                currentZoom--;
+                if (currentZoom == ZoomLevel.Hour)
+                    RebuildBaseTimeline();
             }
         }
     }
 
-    public void GenerateTimeline()
+    void GenerateBaseTimeline()
     {
-        ClearTimeline();
-
-        float frameWidth = contentPanel.rect.width / visibleFrames;
-
-        for (int i = 0; i < visibleFrames; i++)
+        frames.Clear();
+        for (int h = startHour; h < endHour; h++)
         {
-            TimeSpan time = startTime + TimeSpan.FromSeconds(i * currentStep.TotalSeconds);
-            DateTime wallClock = DateTime.Today.Add(time);
-            string timeLabel = currentStep.TotalSeconds >= 60 ? wallClock.ToString("HH:mm") : wallClock.ToString("mm:ss");
+            ClockTime time = new ClockTime(h, 0);
+            frames.Add(CreateFrame(time));
+            AlertEntry match = alertEntries.Find(a => a.alertTime == time.ToString());
+            if (match != null)
+                CreateAlertIcon(time, match);
+        }
+        RepositionFrames();
+        RepositionAlertIcons();
+    }
 
-            GameObject tf = Instantiate(timeFramePrefab, contentPanel);
-            tf.name = $"Frame_{timeLabel}";
-            tf.GetComponent<RectTransform>().sizeDelta = new Vector2(frameWidth, 60f);
-            tf.transform.Find("Label").GetComponent<TextMeshProUGUI>().text = timeLabel;
+    void RebuildBaseTimeline()
+    {
+        foreach (var f in frames)
+            Destroy(f.instance);
+        GenerateBaseTimeline();
+    }
 
-            AlertEntry entry = alertEntries.Find(a => a.alertTime == timeLabel);
-            if (entry != null)
+    void InsertZoomFrames()
+    {
+        int step = zoomSteps[currentZoom];
+        List<TimelineFrame> newFrames = new();
+
+        for (int i = 0; i < frames.Count - 1; i++)
+        {
+            ClockTime t1 = frames[i].time;
+            ClockTime t2 = frames[i + 1].time;
+
+            int gap = t2.TotalMinutes - t1.TotalMinutes;
+            if (gap > step)
             {
-                GameObject icon = Instantiate(alertIconPrefab, alertOverlayPanel);
-                icon.name = $"Alert_{timeLabel}";
-
-                // Set color based on severity
-                if (icon.TryGetComponent(out Image iconImage) && severityColors.TryGetValue(entry.alertSeverity, out Color color))
+                for (int m = step; m < gap; m += step)
                 {
-                    iconImage.color = color;
+                    ClockTime tInsert = t1 + m;
+
+                    // Avoid duplicates
+                    if (!frames.Exists(f => f.time.TotalMinutes == tInsert.TotalMinutes))
+                    {
+                        TimelineFrame inserted = CreateFrame(tInsert);
+                        newFrames.Add(inserted);
+                    }
+                    if (alertEntries.Exists(a => a.alertTime == tInsert.ToString()))
+                    {
+                        AlertEntry match = alertEntries.Find(a => a.alertTime == tInsert.ToString());
+                        CreateAlertIcon(tInsert, match);
+                    }
+
                 }
-
-                icon.GetComponent<Button>().onClick.AddListener(() => alertPopupManager.ShowAlert(entry));
-
-                RectTransform iconRect = icon.GetComponent<RectTransform>();
-                iconRect.anchoredPosition = new Vector2(i * frameWidth, 0);
-                icon.SetActive(false); // Initially hidden, shown by ZoomBox
-
-                iconDict[timeLabel] = icon;
-                activeAlertIcons.Add(icon);
             }
-
         }
+
+        // Add and sort by time
+        frames.AddRange(newFrames);
+        frames.Sort((a, b) => a.time.TotalMinutes.CompareTo(b.time.TotalMinutes));
+
+        RepositionFrames();
+        RepositionAlertIcons();
+    }
+
+
+    TimelineFrame CreateFrame(ClockTime time)
+    {
+        GameObject tf = Instantiate(timeFramePrefab, contentPanel);
+        tf.name = $"Frame_{time}";
+        tf.transform.Find("Label").GetComponent<TextMeshProUGUI>().text = time.ToString();
+        tf.GetComponent<RectTransform>().sizeDelta = new Vector2(frameWidth, 60f);
+        RepositionAlertIcons();
+        return new TimelineFrame { time = time, instance = tf };
+
+    }
+    void CreateAlertIcon(ClockTime time, AlertEntry entry)
+    {
+        GameObject icon = Instantiate(alertIconPrefab, alertOverlayPanel);
+        icon.name = $"Alert_{time}";
+        icon.GetComponent<Button>().onClick.AddListener(() => alertPopupManager.ShowAlert(entry));
+        icon.GetComponent<RectTransform>().sizeDelta = new Vector2(10, 10); // match size
+
+        alertIcons[time.ToString()] = icon;
     }
     void LateUpdate()
     {
         alertOverlayPanel.anchoredPosition = contentPanel.anchoredPosition;
     }
-
-    public List<AlertEntry> GetAlertsInRange(TimeSpan start, TimeSpan end)
+    void RepositionAlertIcons()
     {
-        return alertEntries.FindAll(a =>
+        foreach (var frame in frames)
         {
-            if (TimeSpan.TryParse(a.alertTime, out TimeSpan alertTS))
+            string label = frame.time.ToString(); // "HH:mm"
+
+            if (alertIcons.TryGetValue(label, out GameObject icon))
             {
-                return alertTS >= start && alertTS <= end;
+                RectTransform frameRect = frame.instance.GetComponent<RectTransform>();
+                RectTransform iconRect = icon.GetComponent<RectTransform>();
+
+                // Use same X as frame, keep alert Y fixed (e.g. center or top)
+                iconRect.anchoredPosition = new Vector2(frameRect.anchoredPosition.x + 30, -10);
             }
-            return false;
-        });
+        }
     }
 
-    void ClearTimeline()
+
+    void RepositionFrames()
     {
-        foreach (Transform child in contentPanel)
-            Destroy(child.gameObject);
+        for (int i = 0; i < frames.Count; i++)
+        {
+            TimelineFrame frame = frames[i];
+            RectTransform rt = frame.instance.GetComponent<RectTransform>();
+            float xPos = i * frameWidth;
 
-        foreach (GameObject icon in activeAlertIcons)
-            Destroy(icon);
-        activeAlertIcons.Clear();
-        iconDict.Clear();
+            // Set anchored position based on index
+            rt.anchoredPosition = new Vector2(i * frameWidth, 0);
+
+            // Ensure visual order in the hierarchy matches list order
+            frame.instance.transform.SetSiblingIndex(i);
+            if (alertIcons.TryGetValue(frame.time.ToString(), out GameObject alertGO))
+            {
+                alertGO.GetComponent<RectTransform>().anchoredPosition = new Vector2(xPos, 0);
+            }
+        }
+        RepositionAlertIcons();
+
+
+        // Resize the scroll area
+        contentPanel.sizeDelta = new Vector2(frames.Count * frameWidth, contentPanel.sizeDelta.y);
+        alertOverlayPanel.sizeDelta = contentPanel.sizeDelta;
+
     }
 
+
+
+
+    public List<TimelineFrame> GetFrames() => frames;
+}
+
+public enum ZoomLevel
+{
+    Hour = 0,
+    HalfHour = 1,
+    QuarterHour = 2,
+    FiveMinutes = 3,
+    OneMinute = 4
 }
 
 [System.Serializable]
 public class AlertEntry
 {
     public string alertTitle;
-    public string alertTime;
+    public string alertTime; // "HH:mm"
     public string alertLocation;
     public string alertDescription;
     public string alertAction;
     public string alertType;
     public string alertSeverity;
+}
+[System.Serializable]
+public class TimelineFrame
+{
+    public ClockTime time;
+    public GameObject instance;
 }
