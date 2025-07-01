@@ -2,7 +2,7 @@
 - Project name: Damanat
 - Unity version: Unity 2022.3.13f1
 - Active game object:
-  - Name: FloorsManager
+  - Name: FloorSelector
   - Tag: Untagged
-  - Layer: Default
+  - Layer: UI
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->

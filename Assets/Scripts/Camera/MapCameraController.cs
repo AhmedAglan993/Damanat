@@ -3,7 +3,7 @@ using DG.Tweening;
 
 public class MapCameraController : MonoBehaviour
 {
-    public enum CameraMode { Orbit, Fly }
+    public enum CameraMode { Fly, Orbit }
     public CameraMode mode = CameraMode.Orbit;
 
     [Header("Target Pivot")]
@@ -49,7 +49,11 @@ public class MapCameraController : MonoBehaviour
         targetRotation = transform.rotation;
         targetDistance = Vector3.Distance(transform.position, pivot.position);
     }
-
+    public void OnCameraModeChanged(int index)
+    {
+        mode = (CameraMode)index;
+        Debug.Log("Camera mode switched to: " + mode);
+    }
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Tab))

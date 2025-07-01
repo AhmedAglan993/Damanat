@@ -10,8 +10,6 @@ public class RoomStatisticsUIController : BaseStatisticsUIController
     [SerializeField] TMP_Text occupancyText;
     [SerializeField] TMP_Text energyText;
     [SerializeField] TMP_Text tempText;
-    [SerializeField] TMP_Text airText;
-    [SerializeField] TMP_Text visitorsText;
     [SerializeField] TMP_Text lastMaintText;
 
     [Header("Progress Bars")]
@@ -29,8 +27,6 @@ public class RoomStatisticsUIController : BaseStatisticsUIController
         tempText.text = $"{stats.temperature:F1} °C";
         AnimateProgress(stats.temperature / 100f, tempImage);
 
-        airText.text = $"AQI {stats.airQuality:F0}";
-        visitorsText.text = stats.visitors.ToString();
         lastMaintText.text = stats.lastMaintenance;
         AnimateProgress(stats.occupancy / 100f, occupancyRing);
     }
