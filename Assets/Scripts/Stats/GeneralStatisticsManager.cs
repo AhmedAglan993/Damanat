@@ -10,9 +10,11 @@ public class GeneralStatisticsManager : MonoBehaviour
         if (Instance == null)
             Instance = this;
 
+    }
+    private void OnEnable()
+    {
         SimulateGeneralStats();
     }
-
     void SimulateGeneralStats()
     {
         currentStats = new GeneralStatistics
@@ -22,6 +24,7 @@ public class GeneralStatisticsManager : MonoBehaviour
             totalPeopleInArea = Random.Range(100, 500),
             lastUpdate = System.DateTime.Now.ToString("HH:mm:ss")
         };
+        GetComponent<GeneralStatisticsUIController>().ShowStatistics(currentStats);
     }
 
     public GeneralStatistics GetStats()

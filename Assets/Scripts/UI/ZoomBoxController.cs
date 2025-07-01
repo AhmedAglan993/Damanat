@@ -22,7 +22,10 @@ public class ZoomBoxController : MonoBehaviour, IDragHandler, IBeginDragHandler
         if (!timelineController)
             timelineController = FindObjectOfType<TimelineUIController>();
     }
-
+    private void Update()
+    {
+        HighlightFramesUnderBox();
+    }
     public void OnBeginDrag(PointerEventData eventData)
     {
         RectTransformUtility.ScreenPointToLocalPointInRectangle(contentArea, eventData.position, eventData.pressEventCamera, out dragStartMouse);
@@ -72,21 +75,30 @@ public class ZoomBoxController : MonoBehaviour, IDragHandler, IBeginDragHandler
 
     void HighlightFramesUnderBox()
     {
-        float boxStart = boxRect.anchoredPosition.x;
-        float boxEnd = boxStart + boxRect.sizeDelta.x;
+        Vector3[] boxCorners = new Vector3[4];
+        boxRect.GetWorldCorners(boxCorners);
+        float boxWorldStartX = boxCorners[0].x;
+        float boxWorldEndX = boxCorners[2].x;
 
         foreach (var frame in timelineController.GetFrames())
         {
-            string label = frame.time.ToString(); // e.g., "10:00"
+            string label = frame.time.ToString();
+
             if (timelineController.alertIcons.TryGetValue(label, out GameObject icon))
             {
                 RectTransform iconRT = icon.GetComponent<RectTransform>();
-                float x = iconRT.anchoredPosition.x;
 
-                bool inRange = x >= boxStart && x <= boxEnd;
+                // Convert icon position to world
+                Vector3[] iconCorners = new Vector3[4];
+                iconRT.GetWorldCorners(iconCorners);
+                float iconCenterX = (iconCorners[0].x + iconCorners[2].x) / 2f;
+
+                // World-space comparison
+                bool inRange = iconCenterX >= boxWorldStartX && iconCenterX <= boxWorldEndX;
                 icon.SetActive(inRange);
             }
         }
     }
+
 
 }

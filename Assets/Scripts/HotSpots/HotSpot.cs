@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class HotSpot : MonoBehaviour
 {
-    [SerializeField]public string hotSpotName;
+    [SerializeField] public string hotSpotName;
     void Start()
     {
         GetComponentInChildren<TextMeshProUGUI>().text = hotSpotName;
@@ -14,15 +14,15 @@ public class HotSpot : MonoBehaviour
         {
             GetComponentInChildren<StatisticsPopupOpener>().OpenPopup();
             print(GetComponent<HotSpot>().hotSpotName);
+            OverallStatisticsUIController.Instance.SetIsInRoom(true);
             RoomStatistics roomStatistics = new RoomStatistics(GetComponent<HotSpot>().hotSpotName);
-
-           GetComponentInChildren<StatisticsPopupOpener>().popup.GetComponent<RoomStatisticsUIController>().ShowStatistics(roomStatistics);
+            GetComponentInChildren<StatisticsPopupOpener>().popup.GetComponent<RoomStatisticsUIController>().ShowStatistics(roomStatistics);
         });
     }
     [ContextMenu("SetHotspotNames")]
     public void SetHotspotNames()
     {
-        gameObject.name =  hotSpotName;
+        gameObject.name = hotSpotName;
     }
 
 }
