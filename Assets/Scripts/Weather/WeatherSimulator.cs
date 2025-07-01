@@ -5,14 +5,14 @@ using UnityEngine;
 [Serializable]
 public class WeatherData
 {
-    public float temperature;      // °C
-    public float precipitation;    // %
-    public float humidity;         // %
-    public float windSpeed;        // km/h
-    public float aqi;              // 0–100
-    public string condition;       // e.g., Clear, Rainy
-    public string carbonFootprint; // e.g., "18.4g CO₂/km²"
-    public string viewDistance;    // e.g., "10km"
+    public float temperature;
+    public float precipitation;
+    public float humidity;
+    public float windSpeed;
+    public float aqi;
+    public string condition;
+    public string carbonFootprint;
+    public string viewDistance;   // e.g., "10km"
 }
 
 public class WeatherSimulator : MonoBehaviour
@@ -59,7 +59,9 @@ public class WeatherSimulator : MonoBehaviour
                 carbonFootprint = $"{UnityEngine.Random.Range(15f, 25f):F1}g CO₂/km²",
                 viewDistance = $"{UnityEngine.Random.Range(5f, 20f):F0} km"
             });
+
         }
+        GetComponent<WeatherPanelUIController>().UpdateWeatherUI(currentWeather, weeklyForecast);
 
         Debug.Log("Weather updated!");
     }

@@ -2,7 +2,7 @@
 - Project name: Damanat
 - Unity version: Unity 2022.3.13f1
 - Active game object:
-  - Name: Icon
+  - Name: FloorsManager
   - Tag: Untagged
-  - Layer: UI
+  - Layer: Default
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->
