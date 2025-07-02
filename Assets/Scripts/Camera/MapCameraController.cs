@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using DG.Tweening;
 
 public class MapCameraController : MonoBehaviour
@@ -43,16 +43,24 @@ public class MapCameraController : MonoBehaviour
             center.transform.position = Vector3.zero;
             pivot = center.transform;
         }
-
         cam = Camera.main;
-        targetAngles = transform.eulerAngles;
-        targetRotation = transform.rotation;
-        targetDistance = Vector3.Distance(transform.position, pivot.position);
+        if (mode == CameraMode.Orbit)
+        {
+            SyncOrbitStateToCurrentCamera();
+        }
+        else
+        {
+            targetAngles = transform.eulerAngles;
+            targetRotation = transform.rotation;
+            targetDistance = Vector3.Distance(transform.position, pivot.position);
+        }
     }
     public void OnCameraModeChanged(int index)
     {
+        SyncOrbitStateToCurrentCamera();
         mode = (CameraMode)index;
         Debug.Log("Camera mode switched to: " + mode);
+
     }
     void Update()
     {
@@ -73,6 +81,19 @@ public class MapCameraController : MonoBehaviour
             HandleFlyMode();
         }
     }
+    private float orbitYaw = 0f;   // Horizontal angle (Y axis)
+    private float orbitPitch = 45f; // Vertical angle (X axis), clamped
+    public void SyncOrbitStateToCurrentCamera()
+    {
+        targetRotation = transform.rotation;
+        targetAngles = transform.eulerAngles;
+        targetDistance = Vector3.Distance(transform.position, pivot.position);
+
+        // Also sync orbit yaw/pitch
+        orbitYaw = transform.eulerAngles.y;
+        orbitPitch = transform.eulerAngles.x;
+    }
+
 
     void HandleRotation()
     {
@@ -84,22 +105,26 @@ public class MapCameraController : MonoBehaviour
             float rotX = Input.GetAxis("Mouse X") * rotationSpeed;
             float rotY = -Input.GetAxis("Mouse Y") * rotationSpeed;
 
-            targetAngles += new Vector3(rotY, rotX, 0);
-            targetAngles.x = Mathf.Clamp(targetAngles.x, 10f, 80f);
-            targetRotation = Quaternion.Euler(targetAngles);
+            orbitYaw += rotX;
+            orbitPitch += rotY;
+
+            orbitPitch = Mathf.Clamp(orbitPitch, 10f, 80f);
+
+            targetRotation = Quaternion.Euler(orbitPitch, orbitYaw, 0);
 
             transform.DOKill();
             transform.DORotateQuaternion(targetRotation, rotationDuration).SetUpdate(true);
 
-            float distance = Vector3.Distance(transform.position, pivot.position);
-            Vector3 targetPos = pivot.position - targetRotation * Vector3.forward * distance;
+            Vector3 targetPos = pivot.position - targetRotation * Vector3.forward * targetDistance; // ✅ use fixed distance
             transform.DOMove(targetPos, rotationDuration).SetUpdate(true);
         }
     }
 
+
+
     void HandlePanning()
     {
-        if (Input.GetMouseButton(2))
+        if (Input.GetMouseButton(0))
         {
             Vector3 delta = -new Vector3(Input.GetAxis("Mouse X"), 0, Input.GetAxis("Mouse Y")) * panSpeed;
             delta = transform.TransformDirection(delta);

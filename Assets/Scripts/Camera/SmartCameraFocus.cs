@@ -49,6 +49,8 @@ public class SmartCameraFocus : MonoBehaviour
             rotTween.OnComplete(() =>
             {
                 SyncMapController(targetPosition);
+                mapCameraController.SyncOrbitStateToCurrentCamera();
+
             });
         });
     }
@@ -73,6 +75,7 @@ public class SmartCameraFocus : MonoBehaviour
             rotTween.OnComplete(() =>
             {
                 SyncMapController(resetTarget);
+                mapCameraController.SyncOrbitStateToCurrentCamera();    
             });
         });
     }
