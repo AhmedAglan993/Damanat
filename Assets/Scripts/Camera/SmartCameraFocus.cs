@@ -25,7 +25,7 @@ public class SmartCameraFocus : MonoBehaviour
     private IEnumerator Start()
     {
         yield return new WaitForSeconds(waitToStartCamera);
-        ResetCamera();
+     //   ResetCamera();
     }
 
     /// <summary>

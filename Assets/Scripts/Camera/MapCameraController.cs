@@ -43,18 +43,27 @@ public class MapCameraController : MonoBehaviour
             center.transform.position = Vector3.zero;
             pivot = center.transform;
         }
+
         cam = Camera.main;
-        if (mode == CameraMode.Orbit)
-        {
-            SyncOrbitStateToCurrentCamera();
-        }
-        else
-        {
-            targetAngles = transform.eulerAngles;
-            targetRotation = transform.rotation;
-            targetDistance = Vector3.Distance(transform.position, pivot.position);
-        }
+        // 🧠 Set this AFTER the camera is placed
+        orbitYaw = transform.eulerAngles.y;
+        orbitPitch = transform.eulerAngles.x;
+        targetRotation = transform.rotation;
+        targetDistance = Vector3.Distance(transform.position, pivot.position);
     }
+    void SnapCameraToOrbit()
+    {
+        transform.position = pivot.position - transform.forward * targetDistance;
+    }
+
+    private void ApplyOrbitCameraTransform()
+    {
+        targetRotation = Quaternion.Euler(orbitPitch, orbitYaw, 0);
+        transform.rotation = targetRotation;
+        transform.position = pivot.position - targetRotation * Vector3.forward * targetDistance;
+    }
+
+
     public void OnCameraModeChanged(int index)
     {
         SyncOrbitStateToCurrentCamera();
@@ -82,7 +91,7 @@ public class MapCameraController : MonoBehaviour
         }
     }
     private float orbitYaw = 0f;   // Horizontal angle (Y axis)
-    private float orbitPitch = 45f; // Vertical angle (X axis), clamped
+    private float orbitPitch = 0f; // Vertical angle (X axis), clamped
     public void SyncOrbitStateToCurrentCamera()
     {
         targetRotation = transform.rotation;
@@ -104,6 +113,7 @@ public class MapCameraController : MonoBehaviour
         {
             float rotX = Input.GetAxis("Mouse X") * rotationSpeed;
             float rotY = -Input.GetAxis("Mouse Y") * rotationSpeed;
+            targetDistance = Vector3.Distance(transform.position, pivot.position);
 
             orbitYaw += rotX;
             orbitPitch += rotY;
