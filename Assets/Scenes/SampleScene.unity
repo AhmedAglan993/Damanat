@@ -13932,32 +13932,45 @@ MonoBehaviour:
     floorNumber: 0
     baseModel: {fileID: 1449946242}
     hologramOverlay: {fileID: 575396837}
-    hologramMaterialTemplate: {fileID: 2100000, guid: b3a1e79819c99e54788da149f851b022, type: 2}
-    instancedMaterial: {fileID: 0}
+    hologramMaterials:
+    - nameContains: 
+      hologramMaterialTemplate: {fileID: 2100000, guid: b3a1e79819c99e54788da149f851b022, type: 2}
+      instancedMaterial: {fileID: 0}
   - name: basement 1
     floorNumber: 1
     baseModel: {fileID: 1263664451}
     hologramOverlay: {fileID: 2032067597}
-    hologramMaterialTemplate: {fileID: 2100000, guid: b3a1e79819c99e54788da149f851b022, type: 2}
-    instancedMaterial: {fileID: 0}
+    hologramMaterials:
+    - nameContains: 
+      hologramMaterialTemplate: {fileID: 2100000, guid: b3a1e79819c99e54788da149f851b022, type: 2}
+      instancedMaterial: {fileID: 0}
   - name: Ground Floor
     floorNumber: 2
     baseModel: {fileID: 1525747285}
     hologramOverlay: {fileID: 552034761}
-    hologramMaterialTemplate: {fileID: 2100000, guid: b3a1e79819c99e54788da149f851b022, type: 2}
-    instancedMaterial: {fileID: 0}
+    hologramMaterials:
+    - nameContains: 
+      hologramMaterialTemplate: {fileID: 2100000, guid: b3a1e79819c99e54788da149f851b022, type: 2}
+      instancedMaterial: {fileID: 0}
   - name: First Floor
     floorNumber: 3
     baseModel: {fileID: 1323190469}
     hologramOverlay: {fileID: 1128628909}
-    hologramMaterialTemplate: {fileID: 2100000, guid: b3a1e79819c99e54788da149f851b022, type: 2}
-    instancedMaterial: {fileID: 0}
+    hologramMaterials:
+    - nameContains: 
+      hologramMaterialTemplate: {fileID: 2100000, guid: b3a1e79819c99e54788da149f851b022, type: 2}
+      instancedMaterial: {fileID: 0}
   - name: Roof
     floorNumber: 4
     baseModel: {fileID: 2009990136}
     hologramOverlay: {fileID: 1333431186}
-    hologramMaterialTemplate: {fileID: 2100000, guid: b3a1e79819c99e54788da149f851b022, type: 2}
-    instancedMaterial: {fileID: 0}
+    hologramMaterials:
+    - nameContains: 
+      hologramMaterialTemplate: {fileID: 2100000, guid: b3a1e79819c99e54788da149f851b022, type: 2}
+      instancedMaterial: {fileID: 0}
+    - nameContains: ground
+      hologramMaterialTemplate: {fileID: 2100000, guid: 93a41eaa23b811f40af6f93b46fd322b, type: 2}
+      instancedMaterial: {fileID: 0}
   revealHeight: 10
   delayBetweenFloors: 0.5
   durationPerFloor: 1
@@ -14932,6 +14945,89 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 693801406}
   m_CullTransparentMesh: 1
+--- !u!1 &699366004
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 699366005}
+  - component: {fileID: 699366007}
+  - component: {fileID: 699366006}
+  m_Layer: 0
+  m_Name: ground
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &699366005
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 699366004}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.2750001, y: -9.236589, z: -0.022978783}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1333431187}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &699366006
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 699366004}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 647c078cca46ccd41b1d3af114c84bd4, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &699366007
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 699366004}
+  m_Mesh: {fileID: -1052073632546429049, guid: a0331cf3323645f47814195657f5e25e, type: 3}
 --- !u!1 &702296520
 GameObject:
   m_ObjectHideFlags: 0
@@ -28135,6 +28231,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 699366005}
   - {fileID: 1486100836}
   - {fileID: 5040888441907754686}
   - {fileID: 1369785402}
@@ -45389,6 +45486,7 @@ Transform:
   - {fileID: 1944191672203788576}
   - {fileID: 5741685002724195679}
   - {fileID: 932098059}
+  - {fileID: 2012761776}
   m_Father: {fileID: 2604144209068945552}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2012761775
@@ -45403,7 +45501,7 @@ GameObject:
   - component: {fileID: 2012761778}
   - component: {fileID: 2012761777}
   m_Layer: 0
-  m_Name: Shape008
+  m_Name: ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45418,11 +45516,11 @@ Transform:
   m_GameObject: {fileID: 2012761775}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.2750001, y: -9.236588, z: -0.022978783}
+  m_LocalPosition: {x: -0.2750001, y: -9.236589, z: -0.022978783}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2604144209068945552}
+  m_Father: {fileID: 2009990137}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &2012761777
 MeshRenderer:
@@ -182619,7 +182717,6 @@ Transform:
   - {fileID: 2009990137}
   - {fileID: 1333431187}
   - {fileID: 1541398551}
-  - {fileID: 2012761776}
   - {fileID: 4737665600108412556}
   - {fileID: 5525605693636113894}
   - {fileID: 1037071588524255997}

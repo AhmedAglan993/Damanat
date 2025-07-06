@@ -5,15 +5,21 @@ using UnityEngine;
 public class HologramSwitcher : MonoBehaviour
 {
     [System.Serializable]
+    public class AreaMaterial
+    {
+        public string nameContains;
+        public Material hologramMaterialTemplate;
+        [HideInInspector] public Material instancedMaterial;
+    }
+
+    [System.Serializable]
     public class Floor
     {
         public string name;
         public int floorNumber;
-        public GameObject baseModel;              // Real geometry
-        public GameObject hologramOverlay;        // Overlay with mesh only
-        public Material hologramMaterialTemplate; // Template used to create instance
-
-        [HideInInspector] public Material instancedMaterial;
+        public GameObject baseModel;
+        public GameObject hologramOverlay;
+        public List<AreaMaterial> hologramMaterials = new();
     }
 
     public List<Floor> floors = new List<Floor>();
@@ -31,25 +37,48 @@ public class HologramSwitcher : MonoBehaviour
     {
         foreach (var floor in floors)
         {
-            // Create unique material instance from template
-            if (floor.hologramMaterialTemplate != null)
-            {
-                floor.instancedMaterial = new Material(floor.hologramMaterialTemplate);
-                floor.instancedMaterial.SetFloat("_Reveal", 0f);
-                floor.instancedMaterial.SetFloat("_BlendZone", blendZone);
-            }
-
-            // Assign instanced material to all renderers in overlay
             if (floor.hologramOverlay != null)
             {
                 var renderers = floor.hologramOverlay.GetComponentsInChildren<Renderer>();
+
                 foreach (var rend in renderers)
                 {
-                    Material[] mats = new Material[rend.sharedMaterials.Length];
-                    for (int i = 0; i < mats.Length; i++)
-                        mats[i] = floor.instancedMaterial;
+                    AreaMaterial selected = null;
 
-                    rend.materials = mats;
+                    // Prioritize longer, more specific nameContains matches
+                    foreach (var mat in floor.hologramMaterials)
+                    {
+                        if (!string.IsNullOrWhiteSpace(mat.nameContains) &&
+                            rend.gameObject.name.ToLower().Contains(mat.nameContains.ToLower()))
+                        {
+                            selected = mat;
+                            break;
+                        }
+                    }
+
+                    // Fallback to first if nothing matched
+                    if (selected == null && floor.hologramMaterials.Count > 0)
+                    {
+                        selected = floor.hologramMaterials[0];
+                    }
+
+                    if (selected != null)
+                    {
+                        if (selected.instancedMaterial == null)
+                        {
+                            selected.instancedMaterial = new Material(selected.hologramMaterialTemplate);
+                            selected.instancedMaterial.SetFloat("_Reveal", 0f);
+                            selected.instancedMaterial.SetFloat("_BlendZone", blendZone);
+                        print(selected.nameContains);
+
+                        }
+
+                        Material[] mats = new Material[rend.sharedMaterials.Length];
+                        for (int i = 0; i < mats.Length; i++)
+                            mats[i] = selected.instancedMaterial;
+
+                        rend.materials = mats;
+                    }
                 }
 
                 floor.hologramOverlay.SetActive(false);
@@ -64,6 +93,7 @@ public class HologramSwitcher : MonoBehaviour
     public void RevealHologram()
     {
         if (isHologramActive) return;
+
         floors.Sort((a, b) => a.floorNumber.CompareTo(b.floorNumber));
 
         Sequence seq = DOTween.Sequence();
@@ -72,7 +102,6 @@ public class HologramSwitcher : MonoBehaviour
         {
             seq.AppendCallback(() =>
             {
-                // Scale down base model then hide it and show hologram overlay
                 if (floor.baseModel != null)
                 {
                     seq.Append(floor.baseModel.transform.DOScaleY(0, durationPerFloor / 2)
@@ -80,12 +109,10 @@ public class HologramSwitcher : MonoBehaviour
                         .OnComplete(() =>
                         {
                             floor.baseModel.SetActive(false);
-
                             if (floor.hologramOverlay != null)
                                 floor.hologramOverlay.SetActive(true);
                         }));
 
-                    // Ensure scale is reset for next time
                     floor.baseModel.transform.localScale = Vector3.one;
                 }
                 else
@@ -94,12 +121,14 @@ public class HologramSwitcher : MonoBehaviour
                         floor.hologramOverlay.SetActive(true);
                 }
 
-                if (floor.instancedMaterial != null)
+                foreach (var mat in floor.hologramMaterials)
                 {
-                    floor.instancedMaterial.SetFloat("_Reveal", 0f);
-
-                    DOTween.To(() => 0f, v => floor.instancedMaterial.SetFloat("_Reveal", v), revealHeight, durationPerFloor)
-                        .SetEase(animationEase);
+                    if (mat.instancedMaterial != null)
+                    {
+                        mat.instancedMaterial.SetFloat("_Reveal", 0f);
+                        DOTween.To(() => 0f, v => mat.instancedMaterial.SetFloat("_Reveal", v), revealHeight, durationPerFloor)
+                            .SetEase(animationEase);
+                    }
                 }
             });
 
@@ -113,7 +142,8 @@ public class HologramSwitcher : MonoBehaviour
     public void RevertToOriginal()
     {
         if (!isHologramActive) return;
-        floors.Sort((a, b) => b.floorNumber.CompareTo(a.floorNumber)); // reverse order
+
+        floors.Sort((a, b) => b.floorNumber.CompareTo(a.floorNumber));
 
         Sequence seq = DOTween.Sequence();
 
@@ -121,32 +151,27 @@ public class HologramSwitcher : MonoBehaviour
         {
             seq.AppendCallback(() =>
             {
-                if (floor.instancedMaterial != null)
+                foreach (var mat in floor.hologramMaterials)
                 {
-                    floor.instancedMaterial.SetFloat("_Reveal", revealHeight);
+                    if (mat.instancedMaterial != null)
+                    {
+                        mat.instancedMaterial.SetFloat("_Reveal", revealHeight);
 
-                    DOTween.To(() => revealHeight, v => floor.instancedMaterial.SetFloat("_Reveal", v), 0f, durationPerFloor)
-                        .SetEase(animationEase)
-                        .OnComplete(() =>
-                        {
-                            if (floor.hologramOverlay != null)
-                                floor.hologramOverlay.SetActive(false);
-
-                            if (floor.baseModel != null)
+                        DOTween.To(() => revealHeight, v => mat.instancedMaterial.SetFloat("_Reveal", v), 0f, durationPerFloor)
+                            .SetEase(animationEase)
+                            .OnComplete(() =>
                             {
-                                floor.baseModel.SetActive(true);
-                              //  floor.baseModel.transform.localScale = Vector3.zero;
+                                if (floor.hologramOverlay != null)
+                                    floor.hologramOverlay.SetActive(false);
 
-                                // Scale up base model
-                                floor.baseModel.transform.DOScaleY(1, durationPerFloor / 2)
-                                    .SetEase(animationEase);
-                            }
-                        });
-                }
-                else
-                {
-                    if (floor.baseModel != null)
-                        floor.baseModel.SetActive(true);
+                                if (floor.baseModel != null)
+                                {
+                                    floor.baseModel.SetActive(true);
+                                    floor.baseModel.transform.DOScaleY(1, durationPerFloor / 2)
+                                        .SetEase(animationEase);
+                                }
+                            });
+                    }
                 }
             });
 
@@ -155,16 +180,12 @@ public class HologramSwitcher : MonoBehaviour
 
         seq.OnComplete(() => isHologramActive = false);
     }
+
     public void SwitchHologram(bool hologram)
     {
         if (hologram)
-        {
             RevealHologram();
-
-        }
         else
-        {
             RevertToOriginal();
-        }
     }
 }
