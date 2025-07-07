@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Material #2147451338
-  m_Shader: {fileID: 4800000, guid: deb57bdaa34fc7f40b381a67daaf8ec2, type: 3}
+  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -17,7 +17,8 @@ Material:
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap: {}
+  stringTagMap:
+    RenderType: Opaque
   disabledShaderPasses: []
   m_LockedProperties: 
   m_SavedProperties:
@@ -110,7 +111,7 @@ Material:
     - _Reveal: 0
     - _ScanlineDensity: 50
     - _ScanlineIntensity: 0.3
-    - _Smoothness: 0.555
+    - _Smoothness: 0.14142135
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -120,7 +121,7 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.36842108, g: 0.36842108, b: 0.36842108, a: 0.56078434}
+    - _BaseColor: {r: 0.36842108, g: 0.36842108, b: 0.36842108, a: 1}
     - _Color: {r: 0.36842108, g: 0.36842108, b: 0.36842108, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _HologramColor: {r: 0, g: 1, b: 1, a: 1}

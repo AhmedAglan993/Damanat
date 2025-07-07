@@ -21,14 +21,14 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Hologram 4
-  m_Shader: {fileID: 4800000, guid: 224a1a9bef254f94786b6db980f1ce95, type: 3}
+  m_Shader: {fileID: 4800000, guid: deb57bdaa34fc7f40b381a67daaf8ec2, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
-  m_InvalidKeywords:
+  m_ValidKeywords:
   - _ALPHAPREMULTIPLY_ON
   - _EMISSION
   - _SURFACE_TYPE_TRANSPARENT
+  m_InvalidKeywords: []
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -139,7 +139,7 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 0
     m_Colors:
-    - _BaseColor: {r: 0.19326274, g: 0.8009165, b: 0.9528302, a: 1}
+    - _BaseColor: {r: 0.19326274, g: 0.8009165, b: 0.9528302, a: 0.9019608}
     - _Color: {r: 0.19326274, g: 0.8009165, b: 0.9528302, a: 1}
     - _EmissionColor: {r: 0.13207549, g: 0.12646851, b: 0.12646851, a: 1}
     - _HologramColor: {r: 0, g: 0.37010074, b: 1, a: 1}
