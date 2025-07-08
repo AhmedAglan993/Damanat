@@ -1,4 +1,4 @@
-using Ricimi;
+﻿using Ricimi;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -13,7 +13,7 @@ public class HotSpotButtonsList : MonoBehaviour
 
     private void OnEnable()
     {
-       SetHotSpotsList();
+        SetHotSpotsList();
     }
     public void SetHotSpotsList()
     {
@@ -29,7 +29,7 @@ public class HotSpotButtonsList : MonoBehaviour
         }
     }
 
-    private void AssignOnClick( int index)
+    private void AssignOnClick(int index)
     {
         hotSpotsButtons[index].onClick.AddListener(() =>
         {
@@ -38,7 +38,12 @@ public class HotSpotButtonsList : MonoBehaviour
             GetComponent<Popup>().Close();
 
             RoomStatistics roomStatistics = new RoomStatistics(UIManager.Instance.CurrenthotSpotsHolder.HotSpots[index].hotSpotName);
-
+            foreach (HotSpot hotSpot in UIManager.Instance.CurrenthotSpotsHolder.HotSpots)
+            {
+                hotSpot.ToggleCeiling(true);
+            }
+            if (UIManager.Instance.CurrenthotSpotsHolder.HotSpots[index].hasCeiling && UIManager.Instance.CurrenthotSpotsHolder.HotSpots[index].ceilingObject != null)
+                UIManager.Instance.CurrenthotSpotsHolder.HotSpots[index].ceilingObject.SetActive(false);
             hotSpotsButtons[index].GetComponent<PopupOpener>().popup.GetComponent<RoomStatisticsUIController>().ShowStatistics(roomStatistics);
         });
     }

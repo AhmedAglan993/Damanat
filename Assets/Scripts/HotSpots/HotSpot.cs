@@ -9,8 +9,8 @@ public class HotSpot : MonoBehaviour
     [SerializeField] public string hotSpotName;
 
     [Header("Optional")]
-    [SerializeField] private bool hasCeiling = false;
-    [SerializeField] private GameObject ceilingObject;
+    [SerializeField] public bool hasCeiling = false;
+    [SerializeField] public GameObject ceilingObject;
 
     void Start()
     {
