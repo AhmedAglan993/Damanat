@@ -40,30 +40,32 @@ public class FloorSelector : MonoBehaviour
         foreach (Floor floor in FloorsManager.Instance.floors)
         {
             floor.HotSpotsParent.SetActive(floor.floorNumber == floorNumber);
-            if (floor.floorNumber != floorNumber)
+                FloorsManager.Instance.CurrentUpFloorNumber = floorNumber;
+
+            if (floor.floorNumber > floorNumber)
             {
                 floor.RemoveFloor(() =>
                 {
                     hotSpotButtonsList.SetHotSpotsList();
                 });
             }
-            else
+            else if (floor.floorNumber == floorNumber)
             {
-                FloorsManager.Instance.CurrentUpFloorNumber = floorNumber;
                 print(floorNumber);
-                FloorsManager.Instance.currentUpFloor = FloorsManager.Instance.floors[floorNumber - 1];
-                UIManager.Instance.CurrenthotSpotsHolder = FloorsManager.Instance.floors[floorNumber - 1].HotSpotsParent.GetComponent<HotSpotsHolder>();
+               FloorsManager.Instance.currentUpFloor = floor;
+
+            UIManager.Instance.CurrenthotSpotsHolder = floor.HotSpotsParent.GetComponent<HotSpotsHolder>();
                 if (floor.isOutOfBuilding)
                 {
                     floor.BackToSBuilding(() =>
                     {
-                        FloorsManager.Instance.floors[floorNumber - 1].GetComponent<FocusAriaInteractable>().OnClick();
+                        floor.GetComponent<FocusAriaInteractable>().OnClick();
 
                     });
                 }
                 else
                 {
-                    FloorsManager.Instance.floors[floorNumber - 1].GetComponent<FocusAriaInteractable>().OnClick();
+                    floor.GetComponent<FocusAriaInteractable>().OnClick();
                 }
             }
         }
