@@ -2,7 +2,7 @@
 - Project name: Damanat
 - Unity version: Unity 2022.3.13f1
 - Active game object:
-  - Name: HotSpotList
+  - Name: Locations
   - Tag: Untagged
   - Layer: UI
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->

@@ -86,7 +86,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &7921525917787500433
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -116,6 +116,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82118502520edb4479a4d45a7690d5c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  viewPivot: {fileID: 0}
+  rotationPresetEuler: {x: 45, y: 0, z: 0}
+  positionPreset: {x: 0, y: 0, z: 0}
 --- !u!114 &4687890645395549859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -129,6 +132,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hotSpotName: LOUNGE AREA
+  hasCeiling: 0
+  ceilingObject: {fileID: 0}
 --- !u!1001 &3441461245043207999
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -391,7 +396,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98fb069db42878a4fbcae595862e102b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  popupPrefab: {fileID: 0}
+  popup: {fileID: 0}
   m_canvas: {fileID: 0}
 --- !u!224 &7488779344259365061 stripped
 RectTransform:

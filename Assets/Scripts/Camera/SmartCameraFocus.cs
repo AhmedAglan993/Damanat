@@ -27,7 +27,10 @@ public class SmartCameraFocus : MonoBehaviour
         yield return new WaitForSeconds(waitToStartCamera);
      //   ResetCamera();
     }
-
+    public void SetBirdEye(Transform birdEye)
+    {
+        FocusOn(birdEye.position,birdEye.localRotation);
+    }
     /// <summary>
     /// Focuses on a target position and uses a given world rotation.
     /// </summary>
