@@ -15,7 +15,7 @@ public class AlertPopupManager : MonoBehaviour
     {
         popupRoot.SetActive(true);
 
-        titleText.text = $"Alert: {alertEntry.alertTitle}";
+        titleText.text = $"{alertEntry.alertTitle}";
         titleText.color = color;
         timeText.text = $"<color=#C3BFBF><b>Time:</b></color> {alertEntry.alertTime}";
         locationText.text = $"<color=#C3BFBF><b>Location:</b></color> {alertEntry.alertLocation}";
