@@ -11,6 +11,7 @@ public class FloorsManager : MonoBehaviour
     public int CurrentUpFloorNumber;
     public Floor currentUpFloor;
     [HideInInspector] public HologramSwitcher hologramSwitcher;
+    public HotSpot currentHotspot;
     private void Awake()
     {
         if (Instance == null)
@@ -25,23 +26,29 @@ public class FloorsManager : MonoBehaviour
     }
     void Start()
     {
-      //  floors = FindObjectsOfType<Floor>();
+        //  floors = FindObjectsOfType<Floor>();
         ResetHotSpots();
     }
-
+    public void ResetFloorHotspots()
+    {
+        foreach (var item in UIManager.Instance.CurrenthotSpotsHolder.HotSpots)
+        {
+            item.gameObject.SetActive(true);
+            item.ToggleCeiling(true);
+        }
+    }
     private void ResetHotSpots()
     {
         CurrentUpFloorNumber = floors.Max(f => f.floorNumber);
         foreach (var floor in floors)
         {
             floor.HotSpotsParent.SetActive(false);
-
         }
         currentUpFloor = Array.Find(floors, f => f.floorNumber == CurrentUpFloorNumber);
         currentUpFloor.HotSpotsParent.SetActive(true);
         UIManager.Instance.CurrenthotSpotsHolder = currentUpFloor.HotSpotsParent.GetComponent<HotSpotsHolder>();
     }
-    
+
     public void ResetFloors()
     {
         foreach (Floor floor in floors)

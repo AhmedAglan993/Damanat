@@ -29,12 +29,12 @@ public class SmartCameraFocus : MonoBehaviour
     }
     public void SetBirdEye(Transform birdEye)
     {
-        FocusOn(birdEye.position,birdEye.localRotation);
+        FocusOn(birdEye.position,birdEye.localRotation, Vector3.zero);
     }
     /// <summary>
     /// Focuses on a target position and uses a given world rotation.
     /// </summary>
-    public void FocusOn(Vector3 targetPosition, Quaternion targetRotation)
+    public void FocusOn(Vector3 targetPosition, Quaternion targetRotation, Vector3 center)
     {
         Vector3 desiredPosition = targetPosition + viewOffset;
 
@@ -51,8 +51,9 @@ public class SmartCameraFocus : MonoBehaviour
             var rotTween = transform.DORotate(targetRotation.eulerAngles, moveDuration).SetEase(ease);
             rotTween.OnComplete(() =>
             {
-                SyncMapController(desiredPosition);
+                SyncMapController(center);
                 mapCameraController.SyncOrbitStateToCurrentCamera();
+                FloorsManager.Instance.currentHotspot.gameObject.SetActive(false);
 
             });
         });

@@ -19,11 +19,16 @@ public class HotSpot : MonoBehaviour
         {
             GetComponentInChildren<StatisticsPopupOpener>().OpenPopup();
             OverallStatisticsUIController.Instance.SetIsInRoom(true);
+            GetComponent<FocusAriaInteractable>().OnClick(transform.position);
             RoomStatistics stats = new RoomStatistics(hotSpotName);
             GetComponentInChildren<StatisticsPopupOpener>().popup.GetComponent<RoomStatisticsUIController>().ShowStatistics(stats);
-            foreach (HotSpot hotSpot in UIManager.Instance.CurrenthotSpotsHolder.HotSpots){
+            foreach (HotSpot hotSpot in UIManager.Instance.CurrenthotSpotsHolder.HotSpots)
+            {
                 hotSpot.ToggleCeiling(true);
+                hotSpot.gameObject.SetActive(true);
             }
+            FloorsManager.Instance.currentHotspot = this;
+            gameObject.SetActive(false);
             // 🔻 Hide ceiling if needed
             if (hasCeiling && ceilingObject != null)
                 ceilingObject.SetActive(false);

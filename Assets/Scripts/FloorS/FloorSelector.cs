@@ -59,13 +59,13 @@ public class FloorSelector : MonoBehaviour
                 {
                     floor.BackToSBuilding(() =>
                     {
-                        floor.GetComponent<FocusAriaInteractable>().OnClick();
+                        floor.GetComponent<FocusAriaInteractable>().OnClick(Vector3.zero);
 
                     });
                 }
                 else
                 {
-                    floor.GetComponent<FocusAriaInteractable>().OnClick();
+                    floor.GetComponent<FocusAriaInteractable>().OnClick(Vector3.zero);
                 }
             }
         }

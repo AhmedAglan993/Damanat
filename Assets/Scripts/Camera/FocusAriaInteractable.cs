@@ -14,14 +14,14 @@ public class FocusAriaInteractable : MonoBehaviour
         cameraFocus = Camera.main.GetComponent<SmartCameraFocus>();
     }
 
-    public void OnClick(Transform target)
+    public void OnClick(Transform target, Vector3 center)
     {
-        cameraFocus.FocusOn(target.localPosition, target.localRotation);
+        cameraFocus.FocusOn(target.localPosition, target.localRotation, center);
     }
 
-    public void OnClick()
+    public void OnClick(Vector3 center)
     {
-        cameraFocus.FocusOn(viewPivot.position, viewPivot.localRotation);
+        cameraFocus.FocusOn(viewPivot.position, viewPivot.localRotation, center);
     }
     GameObject view;
     public void CreateAndAssignPivot()

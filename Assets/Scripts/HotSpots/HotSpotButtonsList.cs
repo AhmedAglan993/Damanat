@@ -33,7 +33,7 @@ public class HotSpotButtonsList : MonoBehaviour
     {
         hotSpotsButtons[index].onClick.AddListener(() =>
         {
-            UIManager.Instance.CurrenthotSpotsHolder.HotSpots[index].GetComponent<FocusAriaInteractable>().OnClick();
+            UIManager.Instance.CurrenthotSpotsHolder.HotSpots[index].GetComponent<FocusAriaInteractable>().OnClick(UIManager.Instance.CurrenthotSpotsHolder.HotSpots[index].transform.position);
             hotSpotsButtons[index].GetComponent<PopupOpener>().OpenPopup();
             GetComponent<Popup>().Close();
 
@@ -42,6 +42,7 @@ public class HotSpotButtonsList : MonoBehaviour
             {
                 hotSpot.ToggleCeiling(true);
             }
+            FloorsManager.Instance.currentHotspot = UIManager.Instance.CurrenthotSpotsHolder.HotSpots[index];
             if (UIManager.Instance.CurrenthotSpotsHolder.HotSpots[index].hasCeiling && UIManager.Instance.CurrenthotSpotsHolder.HotSpots[index].ceilingObject != null)
                 UIManager.Instance.CurrenthotSpotsHolder.HotSpots[index].ceilingObject.SetActive(false);
             hotSpotsButtons[index].GetComponent<PopupOpener>().popup.GetComponent<RoomStatisticsUIController>().ShowStatistics(roomStatistics);
