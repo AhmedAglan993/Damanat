@@ -51,12 +51,13 @@ public class SmartCameraFocus : MonoBehaviour
             var rotTween = transform.DORotate(targetRotation.eulerAngles, moveDuration).SetEase(ease);
             rotTween.OnComplete(() =>
             {
-                SyncMapController(targetPosition);
+                SyncMapController(desiredPosition);
                 mapCameraController.SyncOrbitStateToCurrentCamera();
 
             });
         });
     }
+
 
     public void ResetCamera()
     {

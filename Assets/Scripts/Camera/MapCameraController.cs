@@ -113,22 +113,21 @@ public class MapCameraController : MonoBehaviour
         {
             float rotX = Input.GetAxis("Mouse X") * rotationSpeed;
             float rotY = -Input.GetAxis("Mouse Y") * rotationSpeed;
-            targetDistance = Vector3.Distance(transform.position, pivot.position);
 
             orbitYaw += rotX;
             orbitPitch += rotY;
-
             orbitPitch = Mathf.Clamp(orbitPitch, 10f, 80f);
 
             targetRotation = Quaternion.Euler(orbitPitch, orbitYaw, 0);
 
-            transform.DOKill();
-            transform.DORotateQuaternion(targetRotation, rotationDuration).SetUpdate(true);
+            Vector3 desiredPosition = pivot.position - targetRotation * Vector3.forward * targetDistance;
 
-            Vector3 targetPos = pivot.position - targetRotation * Vector3.forward * targetDistance; // ✅ use fixed distance
-            transform.DOMove(targetPos, rotationDuration).SetUpdate(true);
+            transform.DOKill();
+            transform.DOMove(desiredPosition, rotationDuration).SetUpdate(true);
+            transform.DORotateQuaternion(targetRotation, rotationDuration).SetUpdate(true);
         }
     }
+
 
 
 
