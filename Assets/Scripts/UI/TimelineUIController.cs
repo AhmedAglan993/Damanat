@@ -92,7 +92,7 @@ public class TimelineUIController : MonoBehaviour
         }
     }
 
-    void GenerateBaseTimeline()
+    public void GenerateBaseTimeline()
     {
         frames.Clear();
         for (int h = startHour; h < endHour; h++)

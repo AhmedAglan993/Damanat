@@ -1,6 +1,7 @@
-using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEditor.TerrainTools;
+using UnityEngine;
 
 public class EmergencyEditor : EditorWindow
 {
@@ -8,6 +9,9 @@ public class EmergencyEditor : EditorWindow
     private float nodeSpacing = 3f;
     private float linkDistance = 4f;
     private ExitType exitType = ExitType.GroundExit;
+    private bool isPlacingNodes = false;
+    private GameObject nodeParent;
+
 
     [MenuItem("Tools/Emergency System/Emergency Editor")]
     public static void ShowWindow()
@@ -45,6 +49,50 @@ public class EmergencyEditor : EditorWindow
         {
             if (EditorUtility.DisplayDialog("Confirm", "Delete all EmergencyNode components?", "Yes", "No"))
                 ClearAllNodes();
+        }
+        EditorGUILayout.Space();
+        GUILayout.Label("Manual Placement Mode", EditorStyles.boldLabel);
+
+        nodeParent = (GameObject)EditorGUILayout.ObjectField("Node Parent", nodeParent, typeof(GameObject), true);
+
+        if (!isPlacingNodes && GUILayout.Button("Start Placing Nodes"))
+        {
+            isPlacingNodes = true;
+            SceneView.duringSceneGui += OnSceneGUI;
+            Debug.Log("[EmergencyEditor] Node placement mode ENABLED.");
+        }
+
+        if (isPlacingNodes && GUILayout.Button("Stop Placing Nodes"))
+        {
+            isPlacingNodes = false;
+            SceneView.duringSceneGui -= OnSceneGUI;
+            Debug.Log("[EmergencyEditor] Node placement mode DISABLED.");
+        }
+
+    }
+    private void OnSceneGUI(SceneView sceneView)
+    {
+        Event e = Event.current;
+
+        if (e.type == EventType.MouseDown && e.button == 0 && !e.alt)
+        {
+            Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                Vector3 point = hit.point;
+
+                GameObject nodeObj = new GameObject("ManualNode");
+                nodeObj.transform.position = point;
+                if (nodeParent) nodeObj.transform.SetParent(nodeParent.transform);
+
+                EmergencyNode node = nodeObj.AddComponent<EmergencyNode>();
+                node.isExitNode = false;
+                node.neighbors = new List<EmergencyNode>();
+
+                Debug.Log($"[EmergencyEditor] Node placed at {point}");
+
+                e.Use(); // consume click
+            }
         }
     }
 

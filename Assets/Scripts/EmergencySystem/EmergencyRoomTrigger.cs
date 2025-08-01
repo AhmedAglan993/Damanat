@@ -1,0 +1,29 @@
+using UnityEngine;
+
+public class EmergencyRoomTrigger : MonoBehaviour
+{
+    public string roomName;
+    public int floorNumber;
+    public string alertType = "Fire";
+    public string severity = "Critical";
+
+
+    [ContextMenu("Trigger Emergency Alarm")]
+    public void TriggerAlarm()
+    {
+        string time = System.DateTime.Now.ToString("HH:mm");
+
+        AlertEntry entry = new AlertEntry
+        {
+            alertTitle = $"{alertType} in {roomName}",
+            alertTime = time,
+            alertLocation = $"{floorNumber} - {roomName}",
+            alertDescription = $"Detected {alertType} in {roomName}.",
+            alertAction = "Evacuate immediately.",
+            alertType = alertType,
+            alertSeverity = severity
+        };
+
+        EmergencyAlertHandler.Instance.TriggerEmergency(entry, transform,floorNumber);
+    }
+}

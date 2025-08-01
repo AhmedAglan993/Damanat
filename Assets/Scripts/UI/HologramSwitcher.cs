@@ -69,7 +69,7 @@ public class HologramSwitcher : MonoBehaviour
                             selected.instancedMaterial = new Material(selected.hologramMaterialTemplate);
                             selected.instancedMaterial.SetFloat("_Reveal", 0f);
                             selected.instancedMaterial.SetFloat("_BlendZone", blendZone);
-                        print(selected.nameContains);
+                            print(selected.nameContains);
 
                         }
 
