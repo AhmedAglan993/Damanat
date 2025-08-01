@@ -1,29 +1,39 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EmergencyManager : MonoBehaviour
 {
+    public static EmergencyManager Instance { get; private set; }
     public GameObject pathMarkerPrefab;
     public Material pathLineMaterial;
     public float lineWidth = 0.4f;
-
-    [SerializeField] Transform from;
-
+    public Transform emergencyArea;
     private List<GameObject> markers = new();
     private LineRenderer pathLine;
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
+        Instance = this;
+    }
     private void Start()
     {
-        ShowExitPathFrom(from);
     }
     private float arrowAnimSpeed = 1.5f;
     private float arrowOffset = 0f;
 
     private void Update()
     {
-        arrowOffset -= Time.deltaTime * arrowAnimSpeed;
-        print(arrowOffset);
-        pathLine.material.SetTextureOffset("_MainTex", new Vector2(arrowOffset, 0));
+        if (pathLine != null)
+        {
+            arrowOffset -= Time.deltaTime * arrowAnimSpeed;
+            pathLine.material.SetTextureOffset("_MainTex", new Vector2(arrowOffset, 0));
+        }
     }
     public void ShowExitPathFrom(Transform user)
     {

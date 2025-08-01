@@ -11,6 +11,8 @@ public class FloorsManager : MonoBehaviour
     public int CurrentUpFloorNumber;
     public Floor currentUpFloor;
     [HideInInspector] public HologramSwitcher hologramSwitcher;
+    [SerializeField] HotSpotButtonsList hotSpotButtonsList;
+
     public HotSpot currentHotspot;
     private void Awake()
     {
@@ -28,6 +30,41 @@ public class FloorsManager : MonoBehaviour
     {
         //  floors = FindObjectsOfType<Floor>();
         ResetHotSpots();
+    }
+    public void SelectFloorToShow(int floorNumber)
+    {
+        foreach (Floor floor in FloorsManager.Instance.floors)
+        {
+            floor.HotSpotsParent.SetActive(floor.floorNumber == floorNumber);
+            FloorsManager.Instance.CurrentUpFloorNumber = floorNumber;
+
+            if (floor.floorNumber > floorNumber)
+            {
+                floor.RemoveFloor(() =>
+                {
+                    hotSpotButtonsList.SetHotSpotsList();
+                });
+            }
+            else if (floor.floorNumber == floorNumber)
+            {
+                print(floorNumber);
+               currentUpFloor = floor;
+
+                UIManager.Instance.CurrenthotSpotsHolder = floor.HotSpotsParent.GetComponent<HotSpotsHolder>();
+                if (floor.isOutOfBuilding)
+                {
+                    floor.BackToSBuilding(() =>
+                    {
+                        floor.GetComponent<FocusAriaInteractable>().OnClick(Vector3.zero);
+
+                    });
+                }
+                else
+                {
+                    floor.GetComponent<FocusAriaInteractable>().OnClick(Vector3.zero);
+                }
+            }
+        }
     }
     public void ResetFloorHotspots()
     {

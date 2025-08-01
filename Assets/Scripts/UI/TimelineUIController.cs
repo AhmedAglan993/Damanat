@@ -42,33 +42,17 @@ public class TimelineUIController : MonoBehaviour
 
     void Start()
     {
-        GenerateRandomAlerts(80);
+        GenerateAlerts();
         GenerateBaseTimeline();
     }
-    void GenerateRandomAlerts(int count)
+    void GenerateAlerts()
     {
-        string[] titles = { "Unauthorized Access", "Power Spike", "Sensor Offline", "Door Open" };
-        string[] locations = { "Main Entrance", "Server Room", "Cold Storage", "Basement" };
-        string[] severities = { "Info", "Warning", "Critical" };
-
-        System.Random rand = new();
-
-        for (int i = 0; i < count; i++)
+        alertEntries = AlertDatabase.LoadAlerts();
+        for (int i = 0; i < alertEntries.Count; i++)
         {
-            int randomMinute = rand.Next(startHour * 60, endHour * 60);
-            ClockTime time = ClockTime.FromTotalMinutes(randomMinute);
-
-            alertEntries.Add(new AlertEntry
-            {
-                alertTitle = titles[rand.Next(titles.Length)],
-                alertTime = time.ToString(), // "HH:mm"
-                alertLocation = locations[rand.Next(locations.Length)],
-                alertDescription = "Random alert generated for testing.",
-                alertAction = "Check system logs.",
-                alertType = "System",
-                alertSeverity = severities[rand.Next(severities.Length)]
-            });
+            print(alertEntries[i].alertTime);
         }
+        print(Application.persistentDataPath);
     }
 
     void Update()

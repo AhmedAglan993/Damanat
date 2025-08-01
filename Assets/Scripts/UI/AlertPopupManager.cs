@@ -11,7 +11,7 @@ public class AlertPopupManager : MonoBehaviour
     public TextMeshProUGUI descriptionText;
     public TextMeshProUGUI actionText;
 
-    public void ShowAlert(AlertEntry alertEntry, Color color)
+    public virtual void ShowAlert(AlertEntry alertEntry, Color color)
     {
         popupRoot.SetActive(true);
 

@@ -2,11 +2,15 @@ using UnityEngine;
 
 public class EmergencyRoomTrigger : MonoBehaviour
 {
-    public string roomName;
-    public int floorNumber;
+    public string roomName => name;
+    public int floorNumber => transform.parent.GetComponent<HotSpotsHolder>().floorNumber;
     public string alertType = "Fire";
     public string severity = "Critical";
-
+    private void Start()
+    {
+       // TriggerAlarm();
+        print("TriggerAlarm");
+    }
 
     [ContextMenu("Trigger Emergency Alarm")]
     public void TriggerAlarm()
@@ -24,6 +28,6 @@ public class EmergencyRoomTrigger : MonoBehaviour
             alertSeverity = severity
         };
 
-        EmergencyAlertHandler.Instance.TriggerEmergency(entry, transform,floorNumber);
+        EmergencyAlertHandler.Instance.TriggerEmergency(entry, transform, floorNumber);
     }
 }

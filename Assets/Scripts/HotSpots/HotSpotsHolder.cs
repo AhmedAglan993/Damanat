@@ -1,11 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static HotspotMasterPlan;
 
 public class HotSpotsHolder : MonoBehaviour
 {
     [SerializeField] public HotSpot[] HotSpots;
+    public int floorNumber => transform.parent.GetComponent<Floor>().floorNumber;
     private void Start()
     {
         HotSpots = GetComponentsInChildren<HotSpot>();
