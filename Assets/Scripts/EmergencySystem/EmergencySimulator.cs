@@ -38,7 +38,7 @@ public class EmergencySimulator : MonoBehaviour
 
     IEnumerator SimulateAlarms()
     {
-        yield return new WaitForSeconds(simulationInterval);
+        yield return new WaitForSeconds(2);
 
         while (true)
         {

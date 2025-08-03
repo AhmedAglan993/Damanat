@@ -4,7 +4,7 @@ using UnityEngine;
 public class EmergencyNode : MonoBehaviour
 {
     public List<EmergencyNode> neighbors = new();
-    public bool isExitNode;
+    public bool isExitNode,FloorConnector;
     public ExitType exitType;
 
     private void OnDrawGizmos()

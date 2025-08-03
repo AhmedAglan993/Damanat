@@ -6,7 +6,7 @@ public class OnScreenAlertManager : AlertPopupManager
 {
     public void Evacuate()
     {
-        EmergencyManager.Instance.ShowExitPathFrom(EmergencyManager.Instance.emergencyArea);
+        EmergencyManager.Instance.EvacuateAll();
         ClosePopup();
     }
 }

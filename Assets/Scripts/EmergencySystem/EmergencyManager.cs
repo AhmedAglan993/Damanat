@@ -11,6 +11,9 @@ public class EmergencyManager : MonoBehaviour
     public Transform emergencyArea;
     private List<GameObject> markers = new();
     private LineRenderer pathLine;
+    private List<LineRenderer> animatedLines = new();
+    private HashSet<string> drawnSegments = new(); // e.g., "A-B" or "B-A"
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -29,17 +32,27 @@ public class EmergencyManager : MonoBehaviour
 
     private void Update()
     {
-        if (pathLine != null)
+        foreach (var line in animatedLines)
         {
-            arrowOffset -= Time.deltaTime * arrowAnimSpeed;
-            pathLine.material.SetTextureOffset("_MainTex", new Vector2(arrowOffset, 0));
+            if (line == null) continue;
+            float offset = Time.time * -arrowAnimSpeed;
+            line.material.SetTextureOffset("_MainTex", new Vector2(offset, 0));
         }
     }
-    public void ShowExitPathFrom(Transform user)
+
+    public void EvacuateAll()
     {
         ClearPath();
 
-        var path = EmergencyPathfinder.Instance.GetPath(user);
+        EmergencyRoomTrigger[] allRooms = FindObjectsOfType<EmergencyRoomTrigger>();
+        foreach (var room in allRooms)
+        {
+            ShowEvacuationPathFrom(room.transform);
+        }
+    }
+    private void ShowEvacuationPathFrom(Transform startTransform)
+    {
+        var path = EmergencyPathfinder.Instance.GetPath(startTransform);
         if (path == null || path.Count == 0) return;
 
         // Spawn markers
@@ -49,43 +62,52 @@ public class EmergencyManager : MonoBehaviour
             markers.Add(marker);
         }
 
-        // Draw line between nodes
-        GameObject lineObj = new GameObject("PathLine");
-        pathLine = lineObj.AddComponent<LineRenderer>();
-        pathLine.material = pathLineMaterial;
-        pathLine.widthMultiplier = lineWidth;
-        List<Vector3> interpolatedPoints = new();
+        // Draw interpolated line
 
         for (int i = 0; i < path.Count - 1; i++)
         {
-            Vector3 start = path[i].transform.position + Vector3.up * 0.2f;
-            Vector3 end = path[i + 1].transform.position + Vector3.up * 0.2f;
+            EmergencyNode nodeA = path[i];
+            EmergencyNode nodeB = path[i + 1];
 
-            interpolatedPoints.Add(start); // always include the start
+            string key1 = $"{nodeA.GetInstanceID()}-{nodeB.GetInstanceID()}";
+            string key2 = $"{nodeB.GetInstanceID()}-{nodeA.GetInstanceID()}";
 
-            // Add points between nodes (tweak "stepCount" for smoother lines)
+            if (drawnSegments.Contains(key1) || drawnSegments.Contains(key2))
+                continue;
+
+            drawnSegments.Add(key1);
+
+            Vector3 start = nodeA.transform.position + Vector3.up * 0.2f;
+            Vector3 end = nodeB.transform.position + Vector3.up * 0.2f;
+
+            List<Vector3> interpolatedPoints = new();
+            interpolatedPoints.Add(start);
             int stepCount = 5;
             for (int j = 1; j < stepCount; j++)
             {
                 float t = j / (float)stepCount;
-                Vector3 point = Vector3.Lerp(start, end, t);
-                interpolatedPoints.Add(point);
+                interpolatedPoints.Add(Vector3.Lerp(start, end, t));
             }
+            interpolatedPoints.Add(end);
+
+            GameObject lineObj = new GameObject($"PathLine_{nodeA.name}_to_{nodeB.name}");
+            LineRenderer line = lineObj.AddComponent<LineRenderer>();
+            line.material = new Material(pathLineMaterial); // separate instance
+            line.widthMultiplier = lineWidth;
+            line.positionCount = interpolatedPoints.Count;
+            line.SetPositions(interpolatedPoints.ToArray());
+            line.material.mainTextureScale = new Vector2(4f, 1f); // adjust if needed
+            animatedLines.Add(line);
+            markers.Add(lineObj);
         }
-
-        // Add the final point
-        interpolatedPoints.Add(path[^1].transform.position + Vector3.up * 0.2f);
-
-        // Now apply to LineRenderer
-        pathLine.positionCount = interpolatedPoints.Count;
-        pathLine.material.mainTextureScale = new Vector2(path.Count * 2f, 1f);
-
-        print(interpolatedPoints.Count);
-        pathLine.SetPositions(interpolatedPoints.ToArray());
-
-
-        markers.Add(lineObj); // Include line in cleanup list
     }
+
+    public void ShowExitPathFrom(Transform user)
+    {
+        ClearPath();
+        ShowEvacuationPathFrom(user);
+    }
+
 
     public void ClearPath()
     {
@@ -93,5 +115,8 @@ public class EmergencyManager : MonoBehaviour
             if (obj != null) Destroy(obj);
 
         markers.Clear();
+        animatedLines.Clear();
+        drawnSegments.Clear();
     }
+
 }

@@ -146,27 +146,69 @@ public class EmergencyEditor : EditorWindow
 
     private void AutoLinkNodes()
     {
-        EmergencyNode[] nodes = FindObjectsOfType<EmergencyNode>();
+        EmergencyNode[] allNodes = FindObjectsOfType<EmergencyNode>();
         int totalLinks = 0;
 
-        foreach (var node in nodes)
-        {
-            node.neighbors.Clear();
+        Dictionary<Transform, List<EmergencyNode>> floorNodeMap = new();
 
-            foreach (var other in nodes)
+        // Step 1: Group nodes by floor (assuming parent = floor GameObject)
+        foreach (var node in allNodes)
+        {
+            Transform floor = node.transform.parent;
+            if (!floorNodeMap.ContainsKey(floor))
+                floorNodeMap[floor] = new List<EmergencyNode>();
+
+            floorNodeMap[floor].Add(node);
+        }
+
+        // Step 2: Intra-floor linking
+        foreach (var kvp in floorNodeMap)
+        {
+            List<EmergencyNode> nodes = kvp.Value;
+
+            foreach (var node in nodes)
+            {
+                node.neighbors.Clear(); // reset
+
+                foreach (var other in nodes)
+                {
+                    if (node == other) continue;
+
+                    float dist = Vector3.Distance(node.transform.position, other.transform.position);
+                    if (dist <= linkDistance)
+                        node.neighbors.Add(other);
+                }
+
+                totalLinks += node.neighbors.Count;
+            }
+        }
+
+        // Step 3: Inter-floor linking via connectors only
+        List<EmergencyNode> connectors = new();
+        foreach (var node in allNodes)
+        {
+            if (node.GetComponent<EmergencyNode>().FloorConnector)
+                connectors.Add(node);
+        }
+
+        foreach (var node in connectors)
+        {
+            foreach (var other in connectors)
             {
                 if (node == other) continue;
 
                 float dist = Vector3.Distance(node.transform.position, other.transform.position);
-                if (dist <= linkDistance)
+                if (dist <= linkDistance && !node.neighbors.Contains(other))
+                {
                     node.neighbors.Add(other);
+                    totalLinks++;
+                }
             }
-
-            totalLinks += node.neighbors.Count;
         }
 
-        Debug.Log($"[EmergencyEditor] Linked {nodes.Length} nodes with {totalLinks} total neighbor connections.");
+        Debug.Log($"[EmergencyEditor] Linked nodes with {totalLinks} total neighbor connections (intra + inter-floor).");
     }
+
 
     private void MarkAsExit()
     {
