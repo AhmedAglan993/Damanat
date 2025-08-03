@@ -11,7 +11,11 @@ public class HologramSwitcher : MonoBehaviour
         public Material hologramMaterialTemplate;
         [HideInInspector] public Material instancedMaterial;
     }
-
+    public static HologramSwitcher Instance { get; private set; }
+    private void Awake()
+    {
+        Instance = this;
+    }
     [System.Serializable]
     public class Floor
     {
