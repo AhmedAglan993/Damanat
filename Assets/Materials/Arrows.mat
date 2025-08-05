@@ -8,13 +8,12 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Arrows
-  m_Shader: {fileID: 10750, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: aeeb91d6d8da0b642a69355701ce4c46, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _ALPHAPREMULTIPLY_ON
-  - _GLOSSYREFLECTIONS_OFF
   - _SURFACE_TYPE_TRANSPARENT
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -54,7 +53,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 941d6eea63d9b463889b7a8c7736bc34, type: 3}
-        m_Scale: {x: 1.5, y: 1}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
@@ -91,26 +90,32 @@ Material:
     - _Blend: 2
     - _BlendModePreserveSpecular: 1
     - _BlendOp: 0
+    - _BlendZone: 0.5
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _Cull: 2
-    - _Cutoff: 0.5
+    - _Cutoff: 1
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
-    - _DstBlend: 10
+    - _DstBlend: 1
     - _DstBlendAlpha: 1
     - _EnvironmentReflections: 1
+    - _FresnelPower: 2
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
+    - _GlowPower: 2
     - _Metallic: 0
-    - _Mode: 3
+    - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
+    - _Reveal: 0
     - _SampleGI: 0
+    - _ScanlineDensity: 50
+    - _ScanlineIntensity: 0.3
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -122,9 +127,11 @@ Material:
     - _ZWrite: 0
     m_Colors:
     - _BaseColor: {r: 0, g: 0.49738646, b: 1, a: 1}
-    - _Color: {r: 0, g: 0.49738646, b: 1, a: 1}
+    - _Color: {r: 0.5660378, g: 0.008009953, b: 0.040429365, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _HologramColor: {r: 0, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+    - _TintColor: {r: 0.8207547, g: 0.1286967, b: 0.042586334, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &535635525544785374
 MonoBehaviour:
