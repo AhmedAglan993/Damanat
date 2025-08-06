@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using DG.Tweening;
+using UnityEngine.EventSystems;
 
 public class MapCameraController : MonoBehaviour
 {
@@ -22,6 +23,7 @@ public class MapCameraController : MonoBehaviour
     public float minZoom = 10f;
     public float maxZoom = 100f;
     public float zoomDuration = 0.2f;
+    public RectTransform ignoreZoomPanel; // Assign your specific UI panel here
 
     [Header("Fly Mode")]
     public float flyMoveSpeed = 10f;
@@ -142,9 +144,16 @@ public class MapCameraController : MonoBehaviour
             pivot.DOMove(pivot.position + delta, panDuration).SetUpdate(true);
         }
     }
-
+    bool IsPointerOverUIElement(RectTransform rect)
+    {
+        Vector2 mousePos = Input.mousePosition;
+        return RectTransformUtility.RectangleContainsScreenPoint(rect, mousePos, null);
+    }
     void HandleZoom()
     {
+        if (IsPointerOverUIElement(ignoreZoomPanel)) return;
+
+
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(scroll) > 0.01f)
         {

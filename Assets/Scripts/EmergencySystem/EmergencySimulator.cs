@@ -18,7 +18,14 @@ public class EmergencySimulator : MonoBehaviour
         if (autoStart)
             StartSimulation();
     }
-
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            SimulateTrigger();
+            print("Ddddd");
+        }
+    }
     [ContextMenu("Start Simulation")]
     public void StartSimulation()
     {
@@ -49,16 +56,21 @@ public class EmergencySimulator : MonoBehaviour
             }
 
             // Randomly select a room
-            EmergencyRoomTrigger randomRoom = allRooms[Random.Range(0, allRooms.Count)];
-
-            // Trigger the alarm
-            if (randomRoom != null)
-            {
-                Debug.Log($"[Simulator] Triggering alarm in {randomRoom.roomName}");
-                randomRoom.TriggerAlarm();
-            }
+            SimulateTrigger();
 
             yield return new WaitForSeconds(simulationInterval);
+        }
+    }
+
+    private void SimulateTrigger()
+    {
+        EmergencyRoomTrigger randomRoom = allRooms[Random.Range(0, allRooms.Count)];
+
+        // Trigger the alarm
+        if (randomRoom != null)
+        {
+            Debug.Log($"[Simulator] Triggering alarm in {randomRoom.roomName}");
+            randomRoom.TriggerAlarm();
         }
     }
 }

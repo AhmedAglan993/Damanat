@@ -20,7 +20,6 @@ public class EmergencyAlertHandler : MonoBehaviour
         timelineController.GenerateBaseTimeline();
         onScreenAlertManager.ShowAlert(entry, Color.red);
         // FloorsManager.Instance.SelectFloorToShow(floor);
-        HologramSwitcher.Instance.RevealHologram();
         EmergencyManager.Instance.emergencyArea = location;
         if (alarmAudio && !alarmAudio.isPlaying)
             alarmAudio.Play();
